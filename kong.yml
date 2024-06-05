@@ -1,0 +1,42 @@
+_format_version: "2.1"
+
+services:
+  - name: socketio
+    url: http://192.168.1.197:12014
+
+routes:
+  - name: nest-io
+    service: socketio
+    preserve_host: true
+    strip_path: false
+    paths:
+      - /admin-socket-io/connect-admin-price
+    plugins:
+      - name: kong-socket
+        config:
+          authurl: http://host.docker.internal:16000/jwt_decode
+      - name: cors
+        config:
+          origins:
+            - "*"
+          credentials: true
+          preflight_continue: false
+
+plugins:
+  - name: cors
+    service: socketio
+    config:
+      origins:
+        - "*"
+      methods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - PATCH
+      headers:
+        - Authorization
+        - Content-Type
+        - X-Custom-Header
+        - Access-Control-Allow-Origin
+
